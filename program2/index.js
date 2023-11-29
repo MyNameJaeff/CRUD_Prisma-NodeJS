@@ -48,7 +48,7 @@ app.post("/create.html", (req, res) => {
     myObj.Users.map((user) => {
         if (req.body.email == user.email) {
             alreadyExists = true;
-            console.log("\nUsername taken!");
+            console.log("\nUsername taken!\n");
             res.sendFile(join(__dirname, "userStuff/index.html"));
         }
     });
