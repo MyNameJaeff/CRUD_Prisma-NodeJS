@@ -1,0 +1,16 @@
+{
+  "Users": [
+    {
+      "name": "Firstname Lastname",
+      "email": "email@gmail.com",
+      "phone": "073-995 97 84",
+      "submit": "Skicka"
+    },
+    {
+      "name": "Byte Webster",
+      "email": "email_test@gmail.com",
+      "phone": "085-799 85 65",
+      "submit": "Skicka"
+    }
+  ]
+}

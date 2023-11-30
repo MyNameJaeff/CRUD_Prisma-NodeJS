@@ -19,10 +19,36 @@
             <a href="./index.html"><button class="btn btn-outline-primary">Index</button></a>
             <a href="./edit.html"><button class="btn btn-outline-primary">Edit</button></a>
         </div>
+        <div id="personsDiv">
+            <div id="personsSpace">
+
+            </div>
+        </div>
     </main>
-    <form method="post" action="">
-        <input type="submit" value="Send">
-    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const personsSpace = $("#personsSpace");
+
+        socket.emit("showAll");
+        socket.on("show", (users) => {
+            let string = "";
+            users.map((user) => {
+                string += `
+                <div class="card">
+                    <div class='cardImgDiv'>
+                        <img src="${user.image}" alt="Card Image" style="width:100%">
+                    </div>
+                    <div class="container">
+                    <p>Name: <br>${user.name}</p>
+                    <p>Email: <br>${user.email}</p>
+                    <p>Phone: <br>${user.phone}</p>
+                    </div>
+                </div>`;
+            });
+            personsSpace.html(string);
+        })
+    </script>
 </body>
 
 </html>

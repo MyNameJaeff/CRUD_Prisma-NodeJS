@@ -19,11 +19,94 @@
             <a href="./index.html"><button class="btn btn-outline-primary">Index</button></a>
             <a href="./all.html"><button class="btn btn-outline-primary">All</button></a>
         </div>
+        <div>
+            <form id="userForm" name="userForm" action="" enctype="multipart/form-data" method="post">
+                <div class="mb-3">
+                    <label for="userInput" class="form-label">Email:</label>
+                    <div class="input-group mb-3">
+                        <input type="email" name="userInput" id="userInput" required min="3" max="99"
+                            placeholder="T.ex: UptownRook9" class="form-control">
+                    </div>
+                </div>
+                <input type="submit" value="Skicka" name="submit" class="btn btn-primary">
+            </form>
+            <div id="formDiv" style="display: none;">
+                <h3 id="formHeader">Create person</h3>
+                <form id="form" name="test" action="" enctype="multipart/form-data" method="post">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name:</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" name="name" id="name" required><br>
+                        </div>
+                    </div>
+                    <div class="mb-3" disabled> <!-- Disabled because its the unique value in the db -->
+                        <label for="email" class="form-label" disabled>Email:</label>
+                        <div class="input-group mb-3" disabled>
+                            <input type="email" class="form-control" name="email" id="email" required disabled><br>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone:</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" name="phone" id="phone" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Bild:</label>
+                        <div class="input-group mb-3">
+                            <input type="file" class="form-control" accept="image/*" name="image" id="image">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="submit" value="Skicka" name="submit" class="btn btn-primary">
+                        <button onclick="del()" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
 
-    <form method="post" action="">
-        <input type="submit" value="Send">
-    </form>
+        const userInput = $("#userInput");
+        const userForm = $("#userForm");
+        const formDiv = $("#formDiv");
+        const form = $("#form");
+        const name = $("#name");
+        const email = $("#email");
+        const phone = $("#phone");
+
+        form.on("submit", () => {
+            email.prop("disabled", false);
+        })
+
+
+        userForm.on("submit", (e) => {
+            e.preventDefault();
+            socket.emit("chose", userInput.val());
+        });
+
+        socket.on("chosen", (data) => {
+            if (data != false) {
+                userInput.val("");
+                userForm.css("display", "none");
+                formDiv.css("display", "flex");
+                formDiv.css("flex-direction", "column");
+                email.prop("disabled", true);
+                name.val(data.name);
+                email.val(data.email);
+                phone.val(data.phone);
+            } else {
+                alert("There was no user with that email!");
+            }
+        });
+
+        const del = () => {
+            email.prop("disabled", false);
+            socket.emit("deleteThis", email.val());
+        }
+    </script>
 </body>
 
 </html>

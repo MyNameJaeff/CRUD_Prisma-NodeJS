@@ -3,7 +3,7 @@
 }
 
 #personsDiv>div,
-#formDiv, .whoDiv {
+#formDiv, .whoDiv{
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
@@ -42,4 +42,3 @@ img {
 .container {
     padding: 2px 16px;
 }
-
