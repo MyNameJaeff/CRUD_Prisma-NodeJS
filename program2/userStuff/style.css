@@ -10,9 +10,13 @@
     margin-top: 1%;
 }
 
+#formDiv>div{
+    width: 20vw;
+}
+
 main>div:nth-child(3) {
     margin-top: 1%;
-    width: 90%;
+    width: 20vw;
 }
 
 /* Style the cards */

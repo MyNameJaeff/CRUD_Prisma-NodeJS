@@ -27,10 +27,16 @@
     </main>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        // Connects to the database through socket.io
         const socket = io();
+
+        // Defines the space in which to print all of the user cards
         const personsSpace = $("#personsSpace");
 
-        socket.emit("showAll");
+        // Sends "showAll" to the server though socket
+        socket.emit("showAll") ;
+
+        // On "show" print all of the users as cards. All the cards are combined into one large string
         socket.on("show", (users) => {
             let string = "";
             users.map((user) => {

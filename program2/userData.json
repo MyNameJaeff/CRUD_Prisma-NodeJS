@@ -1,3 +1,16 @@
 {
-  "Users": []
+  "Users": [
+    {
+      "name": "Firstname Lastname2",
+      "email": "email2@gmail.com",
+      "phone": "0987654321",
+      "image": "rapidsave.com_ss91qg7rej0c1.gif"
+    },
+    {
+      "name": "Firstname Lastname",
+      "email": "email@gmail.com",
+      "phone": "1234567890",
+      "image": "https://www.thoughtco.com/thmb/XRS8J7vnB3Vx6KRaElWO5fzzg1Y=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/blue-runners--947498612-5c634cd3c9e77c0001566e32.jpg"
+    }
+  ]
 }

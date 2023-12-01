@@ -52,6 +52,19 @@
                         </div>
                     </div>
                     <div class="mb-3">
+                        <fieldset>
+                            <div style="display: flex; justify-content: space-evenly;">
+                                <div>
+                                    <input type="radio" id="file" name="drone" value="file" checked
+                                        onchange="changeInput(1)" />
+                                    <label for="file">File</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="link" name="drone" value="link" onchange="changeInput(2)" />
+                                    <label for="link">Link</label>
+                                </div>
+                            </div>
+                        </fieldset>
                         <label for="image" class="form-label">Bild:</label>
                         <div class="input-group mb-3">
                             <input type="file" class="form-control" accept="image/*" name="image" id="image">
@@ -67,8 +80,10 @@
     </main>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        // Connects to the database through socket.io
         const socket = io();
 
+        // Defines all of the inputs and forms elements
         const userInput = $("#userInput");
         const userForm = $("#userForm");
         const formDiv = $("#formDiv");
@@ -76,17 +91,20 @@
         const name = $("#name");
         const email = $("#email");
         const phone = $("#phone");
+        const imgInput = $("#image");
 
+        // On the edit form submition enable the email input to send it to the server
         form.on("submit", () => {
             email.prop("disabled", false);
         })
 
-
+        // On the search by email form submition stop refresh and send the email to the server to get the users data
         userForm.on("submit", (e) => {
             e.preventDefault();
             socket.emit("chose", userInput.val());
         });
 
+        // On reciving "chosen" from the server change the styling and inputs of the form to match the data from the user
         socket.on("chosen", (data) => {
             if (data != false) {
                 userInput.val("");
@@ -102,9 +120,23 @@
             }
         });
 
+        // On the delete button pressed, un-disable the email to send it to the database to remove user by email
         const del = () => {
-            email.prop("disabled", false);
-            socket.emit("deleteThis", email.val());
+            if(email.val() != null || email.val() != ""){
+                email.prop("disabled", false);
+                socket.emit("deleteThis", email.val());
+            }
+        }
+
+        // On radio button change, depending on parameter input change the input type of the img to allow links and files
+        const changeInput = (which) => {
+            if (which == 2) {
+                imgInput.prop("type", "text");
+                imgInput.prop("accept", "");
+            } else {
+                imgInput.prop("type", "file");
+                imgInput.prop("accept", "image/*");
+            }
         }
     </script>
 </body>

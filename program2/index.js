@@ -1,5 +1,5 @@
+// Defines everything that is required for it to work
 const { PrismaClient } = require('@prisma/client');
-
 const express = require("express");
 const { createServer } = require("node:http");
 const { join } = require("node:path");
@@ -7,16 +7,18 @@ const { Server } = require("socket.io");
 const fs = require("fs");
 const fileUpload = require("express-fileupload");
 
+// Creates a server and a socket.io connection
 const prisma = new PrismaClient();
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
+// Forces it to use fileupload and changes all files path from inside userStuff and upload to the main to not have to send every file though express
 app.use(fileUpload());
 app.use(express.static("userStuff"));
 app.use(express.static(__dirname + "/upload"));
 
-// ... you will write your Prisma Client queries here
+// Prisma client functions for everything. Takes in what to run and the data to use as well
 async function main(what, data) {
     if (what == "Create") {
         await prisma.user_account.create(data);
@@ -44,13 +46,13 @@ async function main(what, data) {
     } else {
         console.log("No query selected!");
     }
-    /* const allUsers = await prisma.user_account.findMany();
-    console.log(allUsers); */
 }
 
 // Server stuff
+
 // Socket.io Stuff
 io.on("connection", (socket) => {
+    // When reciving "chose" from the client, fetch a users data through checking the json file for a user with matching email. If none found send false to client
     socket.on("chose", (who) => {
         let i = false;
         var userData = fs.readFileSync("./userData.json");
@@ -66,9 +68,12 @@ io.on("connection", (socket) => {
             io.emit("chosen", false);
         }
     });
+    // When reciving "showAll" run the function "main" with the parameter "All" to fetch all users and send to the client for printing
     socket.on("showAll", () => {
         main("All", "");
     });
+    // When reciving "deleteThis" check such that an email has been inputted, if it has search json file for user that has it and then remove it. 
+    // Also runs the "main" function with "Delete" parameter together with the inputted email to delete it from the db
     socket.on("deleteThis", (email) => {
         if (email) {
             let arr = { Users: [] };
@@ -88,6 +93,7 @@ io.on("connection", (socket) => {
 })
 
 // Post requests
+// On a post request in the edit.html path change the user in both the db and the json file with the inputted data
 app.post("/edit.html", (req, res) => {
     let arr = { Users: [] };
     var userData = fs.readFileSync("userData.json");
@@ -97,8 +103,12 @@ app.post("/edit.html", (req, res) => {
             user["name"] = req.body.name;
             user["email"] = req.body.email;
             user["phone"] = req.body.phone;
-            user["image"] = req.files.image.name;
-            req.files.image.mv(__dirname + "/upload/" + req.files.image.name);
+            if(req.body.image == undefined){
+                user["image"] = req.files.image.name;
+                req.files.image.mv(__dirname + "/upload/" + req.files.image.name);
+            }else{
+                user["image"] = req.body.image;
+            }
             main("Edit", user)
                 .then(async () => {
                     await prisma.$disconnect();
@@ -120,6 +130,7 @@ app.post("/edit.html", (req, res) => {
     res.sendFile(join(__dirname, "userStuff/edit.html"));
 });
 
+// On a post request in the create.html path create a user in both the json file and db
 app.post("/create.html", (req, res) => {
     var userData = fs.readFileSync("userData.json");
     var myObj = JSON.parse(userData);
@@ -138,9 +149,14 @@ app.post("/create.html", (req, res) => {
                 name: req.body.name,
                 email: req.body.email,
                 phone: req.body.phone,
-                image: req.files.image.name
             }
         }
+        if (req.body.image == undefined) {
+            usr.data.image = req.files.image.name;
+        } else {
+            usr.data.image = req.body.image;
+        }
+
         main("Create", usr)
             .then(async () => {
                 await prisma.$disconnect();
@@ -153,8 +169,11 @@ app.post("/create.html", (req, res) => {
                 await prisma.$disconnect();
                 process.exit(1);
             })
-        req.files.image.mv(__dirname + "/upload/" + req.files.image.name);
-        myObj.Users.push(req.body);
+        if (req.body.image == undefined) {
+            req.files.image.mv(__dirname + "/upload/" + req.files.image.name);
+        }
+
+        myObj.Users.push(usr.data);
         var newData2 = JSON.stringify(myObj, null, 2);
         fs.writeFile("userData.json", newData2, (err) => {
             if (err) throw err;
@@ -163,6 +182,7 @@ app.post("/create.html", (req, res) => {
     }
 });
 
+// Starts the server at port
 server.listen(3000, () => {
     console.log("Server is listening at port 3000");
 });

@@ -43,6 +43,19 @@
                     </div>
                 </div>
                 <div class="mb-3">
+                    <fieldset>
+                        <div style="display: flex; justify-content: space-evenly;">
+                            <div>
+                                <input type="radio" id="file" name="drone" value="file" checked
+                                    onchange="changeInput(1)" />
+                                <label for="file">File</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="link" name="drone" value="link" onchange="changeInput(2)" />
+                                <label for="link">Link</label>
+                            </div>
+                        </div>
+                    </fieldset>
                     <label for="image" class="form-label">Bild:</label>
                     <div class="input-group mb-3">
                         <input type="file" class="form-control" accept="image/*" name="image" id="image" required>
@@ -52,6 +65,21 @@
             </form>
         </div>
     </div>
+    <script>
+        // Define the img input element
+        const imgInput = $("#image");
+
+        // On radio button change, depending on parameter input change the input type of the img to allow links and files
+        const changeInput = (which) => {
+            if (which == 2) {
+                imgInput.prop("type", "text");
+                imgInput.prop("accept", "");
+            } else {
+                imgInput.prop("type", "file");
+                imgInput.prop("accept", "image/*");
+            }
+        }
+    </script>
 </body>
 
 </html>

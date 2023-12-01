@@ -10,6 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Creates a model for creating a user. Email is the unique identifier
 model user_account {
   id Int @id @default(autoincrement())
 
